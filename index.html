@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carnitas El Güero - Sistema de Pedidos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-utensils"></i>
+                    <h1>Carnitas El Güero</h1>
+                </div>
+                <div class="date-display" id="currentDate"></div>
+            </div>
+        </div>
+    </header>
+
+    <nav>
+        <div class="container">
+            <ul class="nav-tabs">
+                <li><button class="nav-tab active" data-target="outside-orders">Pedidos Fuera</button></li>
+                <li><button class="nav-tab" data-target="inside-orders">Pedidos Dentro</button></li>
+                <li><button class="nav-tab" data-target="menu-management">Gestión Menú</button></li>
+                <li><button class="nav-tab" data-target="pending-orders">Pedidos Pendientes</button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- Sección de Pedidos Fuera del Local -->
+        <section id="outside-orders" class="section active">
+            <h2><i class="fas fa-truck"></i> Pedidos Fuera del Local</h2>
+            
+            <div class="two-columns">
+                <div>
+                    <h3>Información del Cliente</h3>
+                    <div class="form-group">
+                        <label for="customer-name">Nombre del Cliente *</label>
+                        <input type="text" id="customer-name" placeholder="Ej: Juan Pérez">
+                    </div>
+                    <div class="form-group">
+                        <label for="customer-phone">Teléfono</label>
+                        <input type="tel" id="customer-phone" placeholder="Ej: 555-123-4567">
+                    </div>
+                    <div class="form-group">
+                        <label for="delivery-address">Dirección de Envío *</label>
+                        <textarea id="delivery-address" rows="3" placeholder="Dirección completa para envío"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="delivery-time">Hora de Entrega Deseada *</label>
+                        <input type="datetime-local" id="delivery-time">
+                    </div>
+                    
+                    <h3>Método de Pago</h3>
+                    <div class="form-group">
+                        <label for="payment-method">Forma de Pago *</label>
+                        <select id="payment-method">
+                            <option value="">Seleccione una opción</option>
+                            <option value="cash">Efectivo</option>
+                            <option value="transfer">Transferencia</option>
+                            <option value="paid">Ya pagó en local</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="cash-amount-group" style="display: none;">
+                        <label for="cash-amount">¿Con cuánto pagará? *</label>
+                        <input type="number" id="cash-amount" placeholder="Monto en MXN">
+                    </div>
+                </div>
+                
+                <div>
+                    <h3>Realizar Pedido</h3>
+                    <div class="form-group">
+                        <label for="item-type">Tipo de Producto *</label>
+                        <select id="item-type">
+                            <option value="">Seleccione una opción</option>
+                            <option value="tacos">Tacos</option>
+                            <option value="tortas">Tortas</option>
+                            <option value="carnitas">Carnitas por cantidad</option>
+                            <option value="drinks">Bebidas</option>
+                        </select>
+                    </div>
+                    
+                    <div id="tacos-options" style="display: none;">
+                        <div class="form-group">
+                            <label for="taco-type">Tipo de Taco *</label>
+                            <select id="taco-type">
+                                <option value="cuerito">Cuerito</option>
+                                <option value="maciza">Maciza</option>
+                                <option value="surtida">Surtida</option>
+                                <option value="buche">Buche</option>
+                                <option value="nana">Nana</option>
+                                <option value="chamorro">Chamorro</option>
+                                <option value="oreja">Oreja</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="taco-quantity">Cantidad *</label>
+                            <input type="number" id="taco-quantity" min="1" value="1">
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="with-vegetables">
+                            <label for="with-vegetables">¿Con verdura? (cebolla, cilantro)</label>
+                        </div>
+                        <button class="btn" id="add-tacos"><i class="fas fa-plus"></i> Agregar Tacos</button>
+                    </div>
+                    
+                    <div id="carnitas-options" style="display: none;">
+                        <div class="form-group">
+                            <label for="carnitas-amount">Cantidad *</label>
+                            <select id="carnitas-amount">
+                                <option value="0.25">1/4 Kilo ($80 MXN)</option>
+                                <option value="0.5">1/2 Kilo ($150 MXN)</option>
+                                <option value="1">1 Kilo ($300 MXN)</option>
+                                <option value="custom">Monto específico</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="custom-amount-group" style="display: none;">
+                            <label for="custom-amount">Monto específico (MXN) *</label>
+                            <input type="number" id="custom-amount" min="1">
+                        </div>
+                        <button class="btn" id="add-carnitas"><i class="fas fa-plus"></i> Agregar Carnitas</button>
+                    </div>
+                    
+                    <div id="order-summary-container">
+                        <h3>Resumen del Pedido</h3>
+                        <div class="order-summary" id="order-summary">
+                            <p class="empty-message">No hay productos en el pedido</p>
+                        </div>
+                        <div class="order-total" id="order-total" style="display: none;">
+                            Total: $<span id="total-amount">0.00</span> MXN
+                        </div>
+                        <button class="btn btn-secondary" id="confirm-order" style="display: none; width: 100%;">
+                            <i class="fas fa-check"></i> Confirmar Pedido
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección de Pedidos Dentro del Local -->
+        <section id="inside-orders" class="section">
+            <h2><i class="fas fa-utensils"></i> Pedidos Dentro del Local</h2>
+            
+            <div class="form-group">
+                <label for="table-type">Tipo de Mesa/Familia *</label>
+                <select id="table-type">
+                    <option value="">Seleccione una opción</option>
+                    <option value="family">Familia</option>
+                    <option value="person">Persona</option>
+                    <option value="couple">Pareja</option>
+                    <option value="table1">Mesa 1</option>
+                    <option value="table2">Mesa 2</option>
+                    <option value="table3">Mesa 3</option>
+                </select>
+            </div>
+            
+            <div class="two-columns">
+                <div>
+                    <h3>Agregar Productos</h3>
+                    <div class="form-group">
+                        <label for="inside-item-type">Tipo de Producto *</label>
+                        <select id="inside-item-type">
+                            <option value="">Seleccione una opción</option>
+                            <option value="tacos">Tacos</option>
+                            <option value="tortas">Tortas</option>
+                            <option value="carnitas">Carnitas por cantidad</option>
+                            <option value="drinks">Bebidas</option>
+                        </select>
+                    </div>
+                    
+                    <div id="inside-tacos-options" style="display: none;">
+                        <!-- Opciones similares a pedidos fuera -->
+                    </div>
+                    
+                    <button class="btn" id="add-to-table"><i class="fas fa-plus"></i> Agregar a la Cuenta</button>
+                </div>
+                
+                <div>
+                    <h3>Cuenta Actual</h3>
+                    <div class="order-summary" id="table-order-summary">
+                        <p class="empty-message">No hay productos en la cuenta</p>
+                    </div>
+                    <div class="order-total" id="table-order-total" style="display: none;">
+                        Total: $<span id="table-total-amount">0.00</span> MXN
+                    </div>
+                    <button class="btn btn-secondary" id="close-table-order" style="display: none; width: 100%;">
+                        <i class="fas fa-receipt"></i> Cerrar Cuenta
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección de Gestión del Menú -->
+        <section id="menu-management" class="section">
+            <h2><i class="fas fa-cog"></i> Gestión del Menú</h2>
+            
+            <div class="filter-bar">
+                <select class="filter-select" id="category-filter">
+                    <option value="all">Todos los productos</option>
+                    <option value="tacos">Tacos</option>
+                    <option value="carnitas">Carnitas</option>
+                    <option value="tortas">Tortas</option>
+                    <option value="drinks">Bebidas</option>
+                </select>
+                <button class="btn" id="add-product"><i class="fas fa-plus"></i> Agregar Producto</button>
+            </div>
+            
+            <div class="menu-grid" id="menu-items">
+                <!-- Los elementos del menú se cargarán dinámicamente -->
+            </div>
+        </section>
+
+        <!-- Sección de Pedidos Pendientes -->
+        <section id="pending-orders" class="section">
+            <h2><i class="fas fa-list"></i> Pedidos Pendientes</h2>
+            
+            <div class="filter-bar">
+                <select class="filter-select" id="status-filter">
+                    <option value="all">Todos los pedidos</option>
+                    <option value="pending">Pendientes</option>
+                    <option value="completed">Completados</option>
+                </select>
+                <select class="filter-select" id="type-filter">
+                    <option value="all">Todos los tipos</option>
+                    <option value="outside">Fuera del local</option>
+                    <option value="inside">Dentro del local</option>
+                </select>
+            </div>
+            
+            <div class="orders-list" id="orders-container">
+                <!-- Los pedidos se cargarán dinámicamente -->
+            </div>
+        </section>
+    </main>
+
+    <div class="notification" id="notification">
+        <i class="fas fa-check-circle"></i>
+        <span id="notification-text"></span>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
